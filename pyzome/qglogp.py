@@ -113,7 +113,7 @@ def buoyancy_frequency_squared(
 
     dT_dz = T.differentiate("z", edge_order=2)
     Nsq = (Rs / H) * (dT_dz + (Rs / Cp) * (T / H))
-    Nsq.attrs["units"] = "s-2"
+    Nsq.attrs["units"] = "s^-2"
     Nsq.attrs["long_name"] = "buoyancy frequency squared"
 
     return Nsq
@@ -390,7 +390,7 @@ def plumb_wave_activity_flux(
         wafx = (p / (2 * a * a * cosphi)) * ((dpsi_dlam) ** 2 - psip * d2psi_dlam2)
         wafx.name = "plumb_wafx"
         wafx.attrs["long_name"] = "Longitude component of Plumb Wave Activity Flux"
-        wafx.attrs["units"] = "m+2 s-2"
+        wafx.attrs["units"] = "m^+2 s^-2"
         waf.append(wafx)
     if "y" in components:
         dpsi_dphi = r2d * psip.differentiate(lat_coord, edge_order=2)
@@ -398,7 +398,7 @@ def plumb_wave_activity_flux(
         wafy = (p / (2 * a * a)) * (dpsi_dlam * dpsi_dphi - psip * d2psi_dphidlam)
         wafy.name = "plumb_wafy"
         wafy.attrs["long_name"] = "Latitude component of Plumb Wave Activity Flux"
-        wafy.attrs["units"] = "m+2 s-2"
+        wafy.attrs["units"] = "m^+2 s^-2"
         waf.append(wafy)
     if "z" in components:
         dpsi_dz = psip.differentiate("z", edge_order=2)
@@ -406,7 +406,7 @@ def plumb_wave_activity_flux(
         wafz = (p * f * f / (2 * Nsq * a)) * (dpsi_dlam * dpsi_dz - psip * d2psi_dlamdz)
         wafz.name = "plumb_wafz"
         wafz.attrs["long_name"] = "Vertical component of Plumb Wave Activity Flux"
-        wafz.attrs["units"] = "m+2 s-2"
+        wafz.attrs["units"] = "m^+2 s^-2"
         waf.append(wafz)
 
     return waf

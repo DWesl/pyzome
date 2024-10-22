@@ -97,8 +97,8 @@ def resid_vel(
     v_res = v - (vTht / dTht_dp).differentiate(lev, edge_order=2)
     w_res = w + (1 / (a * cos_lats)) * w_part
 
-    v_res.attrs["units"] = "m s-1"
-    w_res.attrs["units"] = "Pa s-1"
+    v_res.attrs["units"] = "m s^-1"
+    w_res.attrs["units"] = "Pa s^-1"
 
     return (v_res, w_res)
 
@@ -183,8 +183,8 @@ def epflux_vector(
     F_lat = a * cos_lats * (psi * du_dp - uv)
     F_prs = a * cos_lats * (psi * (f - (ducos_dphi / (a * cos_lats))) - uw)
 
-    F_lat.attrs["units"] = "m+3 s-2"  # type: ignore
-    F_prs.attrs["units"] = "Pa m+2 s-2"  # type: ignore
+    F_lat.attrs["units"] = "m^+3 s^-2"  # type: ignore
+    F_prs.attrs["units"] = "Pa m^+2 s^-2"  # type: ignore
 
     return (F_lat, F_prs)  # type: ignore
 
@@ -261,8 +261,8 @@ def qg_epflux_vector(
     F_lat = -a * cos_lats * uv
     F_prs = a * cos_lats * f * psi
 
-    F_lat.attrs["units"] = "m+3 s-2"  # type: ignore
-    F_prs.attrs["units"] = "Pa m+2 s-2"  # type: ignore
+    F_lat.attrs["units"] = "m^+3 s^-2"  # type: ignore
+    F_prs.attrs["units"] = "Pa m^+2 s^-2"  # type: ignore
 
     return (F_lat, F_prs)  # type: ignore
 
@@ -285,7 +285,7 @@ def epflux_div(
         data containing the vertical EP-Flux component
     accel : bool, optional
         If True, will scale the output by 1 / (a*cos(lat)) so
-        that the divergence is in units of m s-2
+        that the divergence is in units of m s^-2
     terms : bool, optional
         If True, the function returns the individual contributions
         to the divergence from the meridional and vertical components
@@ -328,12 +328,12 @@ def epflux_div(
 
     if accel is True:
         merid_div *= scale
-        merid_div.attrs["units"] = "m s-2"  # type: ignore
+        merid_div.attrs["units"] = "m s^-2"  # type: ignore
         verti_div *= scale
-        verti_div.attrs["units"] = "m s-2"  # type: ignore
+        verti_div.attrs["units"] = "m s^-2"  # type: ignore
     else:
-        merid_div.attrs["units"] = "m+2 s-2"  # type: ignore
-        verti_div.attrs["units"] = "m+2 s-2"  # type: ignore
+        merid_div.attrs["units"] = "m^+2 s^-2"  # type: ignore
+        verti_div.attrs["units"] = "m^+2 s^-2"  # type: ignore
 
     if terms is True:
         return (merid_div, verti_div)  # type: ignore
