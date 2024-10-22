@@ -64,7 +64,21 @@ def zonal_mean(
     if strict is True:
         has_global_regular_lons(dat[lon_coord], enforce=True)
 
-    return dat.mean(lon_coord)
+    result = dat.mean(lon_coord)
+    cell_methods_str = " {:s}: mean".format(lon_coord)
+    try:
+        # dat is xarray.Dataset
+        for name in result.data_vars:
+            var = result[name]
+            var.attrs["cell_methods"] = (
+                var.attrs.get("cell_methods", "") + cell_methods_str
+            ).strip()
+    except AttributeError:
+        # dat is xarray.DataArray
+        result.attrs["cell_methods"] = (
+            result.attrs.get("cell_methods", "") + cell_methods_str
+        )
+    return result
 
 
 @overload
@@ -155,4 +169,17 @@ def meridional_mean(
     wgts = np.cos(np.deg2rad(dat[lat_coord].isel(ixs)))
 
     with xr.set_options(keep_attrs=True):
-        return dat.isel(ixs).weighted(wgts).mean(lat_coord)  # type: ignore
+        result = dat.isel(ixs).weighted(wgts).mean(lat_coord)  # type: ignore
+
+    cell_methods_str = " {:s}: mean".format(lon_coord)
+    try:
+        for name in result.data_vars:
+            var = result[name]
+            var.attrs["cell_methods"] = (
+                var.attrs.get("cell_methods", "") + cell_methods_str
+            ).strip()
+    except AttributeError:
+        result.attrs["cell_methods"] = (
+            var.attrs.get("cell_methods", "") + cell_methods_str
+        )
+    return result
