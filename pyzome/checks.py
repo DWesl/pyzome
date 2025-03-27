@@ -4,6 +4,7 @@ import re
 from typing import Iterable
 
 import numpy as np
+import pint
 import xarray as xr
 
 from .exceptions import LongitudeError, CoordinateError, AttrError, UnitError
@@ -17,54 +18,14 @@ coord_regex = {
 }
 
 var_units = {
-    "altitude": {"m", "meters"},
-    "heatflux": {
-        "K m s-1",
-        "m K s-1",
-        "K*m*s-1",
-        "m*K*s-1",
-        "K * m * s-1",
-        "m * K * s-1",
-        "K*m/s",
-        "m*K/s",
-        "K * m / s",
-        "m * K / s",
-        "Kelvin meters per second",
-        "meters Kelvin per second",
-    },
-    "momentumflux": {
-        "m+2 s-2",
-        "m+2*s-2",
-        "m+2 * s-2",
-        "m+2/s+2",
-        "m+2 / s+2",
-        "meters squared per second squared",
-    },
-    "prs_vertmomflux": {
-        "Pa m s-2",
-        "m Pa s-2",
-        "Pa*m*s-2",
-        "m*Pa*s-2",
-        "Pa * m * s-2",
-        "m * Pa * s-2",
-        "Pa*m/s",
-        "m*Pa/s",
-        "Pa * m / s",
-        "m * Pa / s",
-        "Pascal meters per second squared",
-        "meter Pascals per second squared",
-    },
-    "pressure": {"Pa", "Pascals"},
-    "temperature": {"K", "degK", "Kelvin"},
-    "prs_vvel": {
-        "Pa s-1",
-        "Pa*s-1",
-        "Pa * s-1",
-        "Pa/s",
-        "Pa / s",
-        "Pascals per second",
-    },
-    "wind": {"m s-1", "m*s-1", "m * s-1", "m/s", "m / s", "meters per second"},
+    "altitude": pint.Unit("meter"),
+    "heatflux": pint.Unit("kelvin meters per second"),
+    "momentumflux": pint.Unit("meters squared per second squared"),
+    "prs_vertmomflux": pint.Unit("pascal meters per second squared"),
+    "pressure": pint.Unit("pascal"),
+    "temperature": pint.Unit("kelvin"),
+    "prs_vvel": pint.Unit("pascals per second"),
+    "wind": pint.Unit("meters per second"),
 }
 
 
@@ -207,7 +168,7 @@ def check_var_SI_units(dat: xr.DataArray, var: str, enforce: bool = False) -> bo
         msg = "units is not an attribute of the given DataArray"
         raise AttrError(msg)
 
-    units_SI = dat.units in var_units[var]
+    units_SI = var_units[var] == pint.Unit(dat.units)
     if (enforce is True) and (units_SI is False):
         msg = (
             f"The units '{dat.units}' do not match SI units for the {var}"

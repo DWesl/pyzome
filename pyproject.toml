@@ -27,6 +27,7 @@ dependencies = [
     "xarray",
     "dask",
     "xrft",
+    "pint",
 ]
 
 [project.urls]
