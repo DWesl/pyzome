@@ -71,7 +71,9 @@ var_units = {
 def has_global_regular_lons(
     lons: xr.DataArray | np.ndarray, enforce: bool = False
 ) -> bool:
-    r"""Checks an array of longitudes to ensure it is regularly spaced
+    r"""Check for regular global longitude coordinate.
+
+    Checks an array of longitudes to ensure it is regularly spaced
     and spans 360 degrees. This is primarily to allow for strict checks
     on data before trying to take zonal means, Fourier transforms, etc.
 
@@ -90,6 +92,10 @@ def has_global_regular_lons(
     bool
         True if the lons span 360 degrees and regularly spaced, False if not
 
+    Raises
+    ------
+    LongitudeError
+        If enforce is True but longitude coordinate is non-regular or non-global.
     """
 
     # generally for regularly gridded data, the difference
@@ -118,7 +124,9 @@ def has_global_regular_lons(
 def infer_xr_coord_names(
     dat: xr.DataArray | xr.Dataset, required: Iterable[str] = []
 ) -> dict[str, str]:
-    r"""A convenience function that identifies commonly used coordinate names
+    r"""Find dictionary of coordinate names in dat.
+
+    A convenience function that identifies commonly used coordinate names
     for gridded earth datasets. This function enables other functions in
     pyzome to perform operations across coordinates without the user having
     to specify  the coordinate names or change their data to use pre-defined
@@ -130,7 +138,7 @@ def infer_xr_coord_names(
     dat : ``xarray.DataArray`` or ``xr.Dataset``
         The data containing the coordinates of lat, lon, plev, etc.
 
-    required: List of strings, optional
+    required : List of strings, optional
         If this kwarg is defined, this function will throw errors if it is
         unable to find a name that matches with one of the coordinate-name
         categories defined by coord_regex. Defaults to an empty list,
@@ -138,13 +146,18 @@ def infer_xr_coord_names(
 
     Returns
     -------
-    coord_names: dict
+    coord_names : dict
         string keys and values, with the keys being the
         coordinate name category (e.g., lat, lon), and the values being the
         actual coordinate name in the given xarray data. E.g,
         {"lat":"latitude"} is a possible return value in which latitude was
         detected as the coordinate for the "lat" category.
 
+    Raises
+    ------
+    CoordinateError
+        If there are multiple coordinates of a given type, or required
+        coordinates are not present.
     """
 
     coord_names = {}
@@ -171,7 +184,9 @@ def infer_xr_coord_names(
 
 
 def check_var_SI_units(dat: xr.DataArray, var: str, enforce: bool = False) -> bool:
-    r"""A function that checks whether the units attribute of a DataArray
+    r"""Check whether dat is in SI units.
+
+    A function that checks whether the units attribute of a DataArray
     matches SI units for a specific variable category.
 
     In cases where units matter, pyzome assumes that variables are provided
@@ -187,7 +202,7 @@ def check_var_SI_units(dat: xr.DataArray, var: str, enforce: bool = False) -> bo
     dat : ``xarray.DataArray``
         The data with attributes to check for SI units.
 
-    var: string
+    var : string
         The variable category for checking SI units. These are defined by the
         var_units global dictionary.
 
@@ -201,6 +216,12 @@ def check_var_SI_units(dat: xr.DataArray, var: str, enforce: bool = False) -> bo
     bool
         True if an SI units match is found, False otherwise.
 
+    Raises
+    ------
+    UnitError
+        If enforce is True and units are not SI
+    AttrError
+        If DataArray does not specify units
     """
 
     if "units" not in dat.attrs:
@@ -219,7 +240,9 @@ def check_var_SI_units(dat: xr.DataArray, var: str, enforce: bool = False) -> bo
 
 
 def check_for_logp_coord(dat: xr.DataArray | xr.Dataset, enforce: bool = False) -> bool:
-    r"""A function that checks whether a log-pressure altitude coordinate
+    r"""Check whether dat has a log-pressure coordinate.
+
+    A function that checks whether a log-pressure altitude coordinate
     (assumed to be created by pyzome) exists in the given DataArray. Uses
     a combination of units and long_name to check.
 
@@ -238,6 +261,15 @@ def check_for_logp_coord(dat: xr.DataArray | xr.Dataset, enforce: bool = False) 
     bool
         True if log-pressure altitude coordinate is found. False otherwise.
 
+    Raises
+    ------
+    CoordinateError
+        If enforce is True and dat does not have a log-pressure coordinate
+        with the expected name.
+    AttrError
+        If enforce is True and the coordinate with the expected name has
+        attributes indicating it is not a log-pressure coordinate added by
+        pyzome.
     """
 
     if "z" not in dat.coords:

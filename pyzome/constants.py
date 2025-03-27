@@ -1,4 +1,4 @@
-PREF = 100000.0  # Reference pressure for surface: Pa
+PREF = 100_000.0  # Reference pressure for surface: Pa
 RHOREF = 1.2  # Reference density for surface: kg / m+3
 SCALE_HEIGHT = 7000  # Reference Scale-height: m
 
